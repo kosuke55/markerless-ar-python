@@ -81,10 +81,13 @@ class App:
                 # if there are two reference points, then crop the region of interest
                 # from teh image and display it
                 if len(self.referencePoints) == 2:
-                    cropImage = currentFrame[self.referencePoints[0][1]:self.referencePoints[1][1],
-                                             self.referencePoints[0][0]:self.referencePoints[1][0]]
+                    cropImage \
+                        = currentFrame[self.referencePoints[0][1]:self.referencePoints[1][1],
+                                       self.referencePoints[0][0]:self.referencePoints[1][0]]
                     cv2.rectangle(
-                        currentFrame, self.referencePoints[0], self.referencePoints[1], (0, 255, 0), 2)
+                        currentFrame,
+                        self.referencePoints[0],
+                        self.referencePoints[1], (0, 255, 0), 2)
                     # initialize a marker object for the marker
                     self.roi = ROI(cropImage, self.alg)
 
@@ -98,10 +101,9 @@ class App:
                     cv2.destroyAllWindows()
                     break
         else:
-            roi = cv2.imread('roi.jpg')
+            roi = cv2.imread('roi_rec.jpg')
             print(roi.shape)
-            # roi = cv2.resize(roi, (200, 200))
-            # roi = cv2.resize(roi, (roi.shape[1] // 2, roi.shape[0] // 2))
+            roi = cv2.resize(roi, (200, 200))
             self.roi = ROI(roi, self.alg)
 
         cv2.waitKey(100)
@@ -130,13 +132,21 @@ class App:
 
             (retvalCorner, rvecCorner, tvecCorner) = matcher.computePose(
                 self.roi.getPoints3d(), corners)
+
+            # if(rvecCorner[0] < 0):
+            #     rvecCorner = -rvecCorner
+
             print(rvecCorner)
 
             if retvalCorner:
                 # Set up where to draw the axises of the the cube in the frame
+                # axis = np.float32(
+                #         [[0, 0, 0], [0, 1, 0], [1, 1, 0], [1, 0, 0],
+                #          [0, 0, -1], [0, 1, -1], [1, 1, -1], [1, 0, -1]])
                 axis = np.float32(
-                        [[0, 0, 0], [0, 1, 0], [1, 1, 0], [1, 0, 0],
-                         [0, 0, -1], [0, 1, -1], [1, 1, -1], [1, 0, -1]])
+                        [[1, 0, -1], [1, 1, -1], [0, 1, -1], [0, 0, -1],
+                         [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 0]])
+
 
                 # project 3d points to 2d coordinates in the frame coordination
                 imgpts, jac = cv2.projectPoints(
@@ -145,9 +155,8 @@ class App:
                 # re-draw the frame
                 currentFrame = cv2.polylines(
                     currentFrame,
-                        [np.int32(corners)], True, 255, 3, cv2.LINE_AA)
-                currentFrame = self.renderImg(currentFrame, imgpts)
-
+                    [np.int32(corners)], True, 255, 3, cv2.LINE_AA)
+                # currentFrame = self.drawlines(currentFrame, imgpts)
                 cv2.imshow('webcam', currentFrame)
                 cv2.waitKey(1)
 
@@ -160,15 +169,36 @@ class App:
                 cv2.destroyAllWindows()
                 break
 
-    def renderImg(self, img, imgpts):
+    def drawlines(self, img, imgpts):
         imgpts = np.int32(imgpts).reshape(-1, 2)
-
         # draw floor in grey
-        img = cv2.drawContours(img, [imgpts[:4]], -1, (175, 175, 175), -3)
-
+        # img = cv2.drawContours(img, [imgpts[:4]], -1, (175, 175, 175), -3)
         # draw pillars in blue color
-        for i, j in zip(range(4), range(4, 8)):
-            img = cv2.line(img, tuple(imgpts[i]), tuple(imgpts[j]), (255), 3)
+        # for i, j in zip(range(4), range(4, 8)):
+        # for i, j in zip(range(4), range(4, 8)):
+        #     img = cv2.line(img, tuple(imgpts[i]), tuple(imgpts[j]), (255), 3)
+
+        # img = cv2.line(img,
+        #                tuple((imgpts[0] + imgpts[1] + imgpts[2] + imgpts[3]) // 4),
+        #                tuple((imgpts[0] + imgpts[1]) // 2),
+        #                (0, 255, 0), 3)
+        # img = cv2.line(img,
+        #                tuple((imgpts[0] + imgpts[1] + imgpts[2] + imgpts[3]) // 4),
+        #                tuple((imgpts[1] + imgpts[2]) // 2),
+        #                (0, 0, 255), 3)
+        img = cv2.line(img,
+                       tuple((imgpts[4] + imgpts[5] + imgpts[6] + imgpts[7]) // 4),
+                       tuple((imgpts[4] + imgpts[5]) // 2),
+                       (0, 255, 0), 3)
+        img = cv2.line(img,
+                       tuple((imgpts[4] + imgpts[5] + imgpts[6] + imgpts[7]) // 4),
+                       tuple((imgpts[5] + imgpts[6]) // 2),
+                       (0, 0, 255), 3)
+        img = cv2.line(img,
+                       tuple((imgpts[0] + imgpts[1] + imgpts[2] + imgpts[3]) // 4),
+                       tuple((imgpts[4] + imgpts[5] + imgpts[6] + imgpts[7]) // 4),
+                       (255, 0, 0), 3)
+
         return img
 
 

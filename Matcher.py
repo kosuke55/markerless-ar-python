@@ -63,9 +63,9 @@ class Matcher:
 
         if len(good) > MIN_MATCH_COUNT:
             src_pts = np.float32(
-                [kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)  # n*(1*2)
+                [kp1[g.queryIdx].pt for g in good]).reshape(-1, 1, 2)  # n*(1*2)
             dst_pts = np.float32(
-                [kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)  # n*(1*2)
+                [kp2[g.trainIdx].pt for g in good]).reshape(-1, 1, 2)  # n*(1*2)
 
             # Find homography transformation and detect good matches, using the matching image point pairs
             # bring points from a pattern to the query image coordinate system
