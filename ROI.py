@@ -30,13 +30,15 @@ class ROI(object):
 
         # normalize
         maxSize = max(width, height)
-        w = width/maxSize
-        h = height/maxSize
+        w = width / float(maxSize)
+        h = height / float(maxSize)
 
-        self.points2d = np.array([[0, 0], [width, 0], [width, height], [
-                                 0, height]])  # corner points in 2d
-        self.points3d = np.array([[0, 0, 0], [w, 0, 0], [w, h, 0], [
-                                 0, h, 0]])  # corner points in 3d
+        self.points2d = np.array([[0, 0], [width, 0],
+                                  [width, height], [0, height]],
+                                 dtype=np.float32)  # corner points in 2d
+        self.points3d = np.array([[0, 0, 0], [w, 0, 0],
+                                  [w, h, 0], [0, h, 0]],
+                                 dtype=np.float32)  # corner points in 3d
 
     def getPoints2d(self):
         return self.points2d

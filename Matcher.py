@@ -57,7 +57,7 @@ class Matcher:
             if len(m_n) != 2:
                 continue
             (m, n) = m_n
-            if m.distance < 0.7*n.distance:
+            if m.distance < 0.7 * n.distance:
                 # m is from the scene/captured image <DMatch 0x104a34c30>
                 good.append(m)
 
@@ -86,7 +86,7 @@ class Matcher:
                 # http://docs.opencv.org/3.0-beta/modules/core/doc/operations_on_arrays.html#void%20perspectiveTransform(InputArray%20src,%20OutputArray%20dst,%20InputArray%20m)
                 corners = cv2.perspectiveTransform(
                     pts, M)  # points2d for the frame image
-            except:
+            except Exception:
                 print('No matching points after homography estimation')
                 return
 

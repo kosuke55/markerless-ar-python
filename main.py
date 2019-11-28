@@ -98,7 +98,7 @@ class App:
                     cv2.destroyAllWindows()
                     break
         else:
-            roi = cv2.imread('roi_rec.jpg')
+            roi = cv2.imread('roi.jpg')
             print(roi.shape)
             # roi = cv2.resize(roi, (200, 200))
             # roi = cv2.resize(roi, (roi.shape[1] // 2, roi.shape[0] // 2))
